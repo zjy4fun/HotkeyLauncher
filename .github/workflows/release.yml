@@ -30,6 +30,9 @@ jobs:
           xcodebuild -version
           swift --version
 
+      - name: Test
+        run: swift test
+
       - name: Build release binary
         run: swift build -c release --arch arm64 --arch x86_64
 

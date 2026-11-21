@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 @MainActor
@@ -6,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let store = ShortcutStore()
     private var window: NSWindow?
     private var statusItem: NSStatusItem?
+    private var statusItemVisibilityCancellable: AnyCancellable?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Keep accessory policy so LSUIElement / menu-bar-only behavior is preserved:
@@ -13,7 +15,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         store.start()
         createWindow()
-        createStatusItem()
+        statusItemVisibilityCancellable = store.$showsMenuBarIcon
+            .removeDuplicates()
+            .sink { [weak self] isVisible in
+                self?.updateStatusItemVisibility(isVisible)
+            }
 
         if !CommandLine.arguments.contains("--background") {
             showWindow()
@@ -74,6 +80,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.setFrame(NSRect(x: 0, y: 0, width: 900, height: 560), display: true)
         window.center()
         self.window = window
+    }
+
+    private func updateStatusItemVisibility(_ isVisible: Bool) {
+        if isVisible {
+            guard statusItem == nil else {
+                return
+            }
+            createStatusItem()
+        } else if let statusItem = statusItem {
+            NSStatusBar.system.removeStatusItem(statusItem)
+            self.statusItem = nil
+        }
     }
 
     private func createStatusItem() {

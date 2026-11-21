@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @Binding var launchAtLogin: Bool
     @Binding var opensNewWindowWhenNoVisibleWindows: Bool
+    @Binding var showsMenuBarIcon: Bool
 
     let latestUpdate: UpdateInfo?
     let isCheckingForUpdates: Bool
@@ -22,6 +23,16 @@ struct SettingsView: View {
                         .toggleStyle(.switch)
 
                     VStack(alignment: .leading, spacing: 6) {
+                        Toggle("Show menu bar icon", isOn: $showsMenuBarIcon)
+                            .toggleStyle(.switch)
+
+                        Text("Global shortcuts keep working when the icon is hidden. To restore the icon, open HotkeyLauncher from Finder or Spotlight and turn this switch on.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
                         Toggle("New window when none are visible", isOn: $opensNewWindowWhenNoVisibleWindows)
                             .toggleStyle(.switch)
 
@@ -29,6 +40,12 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    if !showsMenuBarIcon {
+                        Button("Quit HotkeyLauncher") {
+                            NSApp.terminate(nil)
+                        }
                     }
                 }
 
