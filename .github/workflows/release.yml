@@ -22,7 +22,7 @@ jobs:
     runs-on: macos-15
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Show toolchain
         run: |
@@ -134,11 +134,27 @@ jobs:
             -format UDZO \
             "$DMG_NAME"
 
+      - name: Generate changelog and release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          python3 -m unittest discover -s script -p 'test_update_changelog.py'
+
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            python3 script/update_changelog.py --tag "$GITHUB_REF_NAME" --notes-output release-notes.md
+          else
+            python3 script/update_changelog.py
+          fi
+
       - name: Upload DMG artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: HotkeyLauncher-DMG
-          path: HotkeyLauncher-*.dmg
+          path: |
+            HotkeyLauncher-*.dmg
+            CHANGELOG.md
 
       - name: Write update metadata
         if: github.ref_type == 'tag'
@@ -158,8 +174,10 @@ jobs:
 
       - name: Upload DMG to Release
         if: github.ref_type == 'tag'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
+          body_path: release-notes.md
           files: |
             HotkeyLauncher-*.dmg
             latest.json
+            CHANGELOG.md
