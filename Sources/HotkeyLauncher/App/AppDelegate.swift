@@ -8,7 +8,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.regular)
+        // Keep accessory policy so LSUIElement / menu-bar-only behavior is preserved:
+        // no Dock icon, no Command+Tab entry. Windows can still be shown while accessory.
+        NSApp.setActivationPolicy(.accessory)
         store.start()
         createWindow()
         createStatusItem()
@@ -26,6 +28,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func showWindow() {
         if window == nil {
             createWindow()
+        }
+
+        // Never promote to `.regular` when showing UI — accessory apps can own windows.
+        if NSApp.activationPolicy() != .accessory {
+            NSApp.setActivationPolicy(.accessory)
         }
 
         window?.makeKeyAndOrderFront(nil)
