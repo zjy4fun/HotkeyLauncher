@@ -12,6 +12,7 @@ final class ShortcutStore: ObservableObject {
     @Published var isShowingSettings = false
     @Published var launchAtLogin: Bool
     @Published var opensNewWindowWhenNoVisibleWindows: Bool
+    @Published private(set) var showsMenuBarIcon: Bool
     @Published var alert: AlertItem?
     @Published var latestUpdate: UpdateInfo?
     @Published var isCheckingForUpdates = false
@@ -31,7 +32,9 @@ final class ShortcutStore: ObservableObject {
         self.shortcuts = initialShortcuts
         self.selectedID = initialShortcuts.first?.id
         self.launchAtLogin = LoginItemInstaller.isEnabled(bundleURL: Bundle.main.bundleURL)
-        self.opensNewWindowWhenNoVisibleWindows = storage.loadSettings().opensNewWindowWhenNoVisibleWindows
+        let settings = storage.loadSettings()
+        self.opensNewWindowWhenNoVisibleWindows = settings.opensNewWindowWhenNoVisibleWindows
+        self.showsMenuBarIcon = settings.showsMenuBarIcon
     }
 
     func start() {
@@ -190,6 +193,11 @@ final class ShortcutStore: ObservableObject {
         persistSettings()
     }
 
+    func setShowsMenuBarIcon(_ enabled: Bool) {
+        showsMenuBarIcon = enabled
+        persistSettings()
+    }
+
     func setLaunchAtLogin(_ enabled: Bool) {
         do {
             try LoginItemInstaller.setEnabled(enabled, bundleURL: Bundle.main.bundleURL)
@@ -237,6 +245,7 @@ final class ShortcutStore: ObservableObject {
             let configuration = try storage.importConfiguration(from: url)
             shortcuts = configuration.shortcuts
             opensNewWindowWhenNoVisibleWindows = configuration.settings.opensNewWindowWhenNoVisibleWindows
+            showsMenuBarIcon = configuration.settings.showsMenuBarIcon
             selectedID = shortcuts.first?.id
             persist()
             persistSettings()
@@ -386,6 +395,9 @@ final class ShortcutStore: ObservableObject {
     }
 
     private var currentSettings: AppSettings {
-        AppSettings(opensNewWindowWhenNoVisibleWindows: opensNewWindowWhenNoVisibleWindows)
+        AppSettings(
+            opensNewWindowWhenNoVisibleWindows: opensNewWindowWhenNoVisibleWindows,
+            showsMenuBarIcon: showsMenuBarIcon
+        )
     }
 }

@@ -50,6 +50,12 @@ Global settings are stored at:
 
 ## Settings
 
+Use **Show menu bar icon** to show or hide the menu bar icon immediately. This
+setting is saved across launches and included in configuration imports/exports.
+Global shortcuts keep working while the icon is hidden. To restore it, open
+HotkeyLauncher again from Finder or Spotlight, then enable the switch in Settings.
+A **Quit HotkeyLauncher** button is available in Settings while the icon is hidden.
+
 Enable **New window when none are visible** to apply the behavior to all
 shortcuts. When a target app is already running but has no visible regular
 windows, HotkeyLauncher activates it and sends `Command+N` so apps like Chrome

@@ -41,6 +41,10 @@ struct ContentView: View {
                     get: { store.opensNewWindowWhenNoVisibleWindows },
                     set: { store.setOpensNewWindowWhenNoVisibleWindows($0) }
                 ),
+                showsMenuBarIcon: Binding(
+                    get: { store.showsMenuBarIcon },
+                    set: { store.setShowsMenuBarIcon($0) }
+                ),
                 latestUpdate: store.latestUpdate,
                 isCheckingForUpdates: store.isCheckingForUpdates,
                 isDownloadingUpdate: store.isDownloadingUpdate,

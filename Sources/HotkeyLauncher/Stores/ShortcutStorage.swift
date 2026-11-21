@@ -2,8 +2,27 @@ import Foundation
 
 struct AppSettings: Codable, Equatable {
     var opensNewWindowWhenNoVisibleWindows: Bool
+    var showsMenuBarIcon: Bool
 
     static let `default` = AppSettings(opensNewWindowWhenNoVisibleWindows: true)
+
+    init(opensNewWindowWhenNoVisibleWindows: Bool, showsMenuBarIcon: Bool = true) {
+        self.opensNewWindowWhenNoVisibleWindows = opensNewWindowWhenNoVisibleWindows
+        self.showsMenuBarIcon = showsMenuBarIcon
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case opensNewWindowWhenNoVisibleWindows
+        case showsMenuBarIcon
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        opensNewWindowWhenNoVisibleWindows = try container.decode(
+            Bool.self, forKey: .opensNewWindowWhenNoVisibleWindows
+        )
+        showsMenuBarIcon = try container.decodeIfPresent(Bool.self, forKey: .showsMenuBarIcon) ?? true
+    }
 }
 
 struct ShortcutStorage {

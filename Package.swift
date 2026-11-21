@@ -18,6 +18,10 @@ let package = Package(
                 .linkedFramework("AppKit"),
                 .linkedFramework("Carbon")
             ]
+        ),
+        .testTarget(
+            name: "HotkeyLauncherTests",
+            dependencies: ["HotkeyLauncher"]
         )
     ]
 )
