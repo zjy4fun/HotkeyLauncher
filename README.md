@@ -66,6 +66,28 @@ GitHub workflow embed the tag version, upload the DMG, and publish
 `latest.json` metadata for update checks. Branch builds upload the generated
 DMG as a GitHub Actions artifact.
 
+## Changelog and release notes
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history, pull requests, and their authors.
+With [GitHub CLI](https://cli.github.com/) installed and authenticated, regenerate it with:
+
+```bash
+python3 script/update_changelog.py
+```
+
+To also generate notes for a version tag, including one not yet published:
+
+```bash
+python3 script/update_changelog.py --tag v1.0.11 --notes-output release-notes.md
+```
+
+The workflow runs this script automatically. Each build artifact includes the current
+changelog; tag builds also use the generated notes as the Release description and
+attach `CHANGELOG.md` alongside the DMG and `latest.json`. Run the script locally to
+refresh the checked-in copy after a release. PR authors and links come from GitHub's
+generated release notes rather than a manually maintained list. Versions with no PR
+entries list their commits and authors instead.
+
 ## Default shortcuts
 
 - `Option+Command+T` -> `/Applications/FlowDeck.app`
